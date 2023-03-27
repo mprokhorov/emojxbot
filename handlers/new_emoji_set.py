@@ -48,7 +48,7 @@ async def emoji_set_name_title_chosen_correctly(message: Message, state: FSMCont
                                      [InputSticker(sticker=white_png, emoji_list=['😁'])],
                                      "static", "custom_emoji")
     await message.answer(
-        text=f"Sticker set was created successfully! You can find it at: "
+        text=f"Emoji set was created successfully! You can find it at: "
              f"t.me/addstickers/{data['chosen_emoji_set_name']}_by_emojxbot"
     )
 
