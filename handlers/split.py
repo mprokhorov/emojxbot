@@ -4,8 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, InputSticker, Sticker, StickerSet
 from aiogram.methods import get_sticker_set
-from PIL import Image, ImageSequence
-from itertools import product
+from PIL import Image
 from scripts.crop import split_static_image
 
 router = Router()
@@ -30,15 +29,14 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
     file = await bot.get_file(file_id)
     file_path = file.file_path
     await bot.download_file(file_path, file_name)
-    data = await state.get_data()
-    data['image_to_split'] = file_name
+    await state.update_data(image_to_split=file_name)
     await message.reply(text='Now choose emoji set to which emoji tiles will be added.')
     await state.set_state(Split.choosing_set)
 
 
 @router.message(Split.choosing_set, Command('choose_set'))
 async def choose_emoji_set(message: Message, state: FSMContext, bot: Bot):
-    data = state.get_data()
-    image = await data['image_to_split']
+    data = await state.get_data()
+    image = data['image_to_split']
     img_to_split = Image.open(image)
-    split_static_image(img_to_split, f'out/{image.split(".")[0]}_split', 'png')
+    split_static_image(img_to_split, f'scripts/out/{image.split(".")[0]}_split', 'png')
