@@ -25,14 +25,21 @@ async def cmd_split(message: Message, state: FSMContext):
 
 @router.message(Split.choosing_image, F.document)
 async def get_document(message: Message, state: FSMContext, bot: Bot):
-    file_id = message.document.file_id
-    file_name = message.document.file_name
-    file = await bot.get_file(file_id)
-    file_path = file.file_path
-    await bot.download_file(file_path, file_name)
-    await state.update_data(image_to_split=file_name)
-    await message.reply(text='Now choose emoji set to which emoji tiles will be added.')
+    # file_id = message.document.file_id
+    # file_name = message.document.file_name
+    # file = await bot.get_file(file_id)
+    # file_path = file.file_path
+    # await bot.download_file(file_path, file_name)
+    # await state.update_data(image_to_split=file_name)
+    # await message.reply(text='Now choose emoji set to which emoji tiles will be added.')
+    # await state.set_state(Split.choosing_set)
+    data = await state.get_data()
+    document = message.document
+    splitted_image = await bot.download(document.file_id)
+    # await message.reply(text=f'{type(splitted_image)}')
+    await state.update_data(image_to_split=splitted_image)
     await state.set_state(Split.choosing_set)
+    await message.reply(text='Now choose emoji set to which emoji tiles will be added.')
 
 
 @router.message(Split.choosing_set, Command('choose_set'))
@@ -40,4 +47,6 @@ async def choose_emoji_set(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     image = data['image_to_split']
     img_to_split = Image.open(image)
-    split_static_image(img_to_split, f'scripts/out/{image.split(".")[0]}_split', 'png')
+    # split_static_image(img_to_split, f'scripts/out/chicken_split', 'png')
+    tiles_to_add = split_static_image(img_to_split)
+

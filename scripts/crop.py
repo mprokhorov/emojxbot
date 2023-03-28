@@ -2,7 +2,7 @@ from PIL import Image, ImageSequence
 from itertools import product
 
 
-def split_static_image(image, name, ext):
+def split_static_image(image):
     w, h = image.size
     d = 100
     grid = product(range(0, h, 100), range(0, w, 100))
@@ -10,10 +10,12 @@ def split_static_image(image, name, ext):
     def crop_image(original_img, left, top, right, bottom):
         return original_img.crop((left, top, right, bottom))
 
+    tiles = []
     for i, j in grid:
         result = crop_image(image, j, i, j + d, i + d)
-        result.save(f'{name}{i}_{j}.{ext}')
-
+        tiles.append(result)
+        # result.save(f'{name}{i}_{j}.{ext}')
+    return tiles
 
 def split_multi_frame_image(image, name, ext):
     w, h = image.size
@@ -29,8 +31,3 @@ def split_multi_frame_image(image, name, ext):
     for i, j in grid:
         result = crop_image(image, j, i, j + d, i + d)
         result[0].save(f'{name}{i}_{j}.{ext}', save_all=True, append_images=result[1:], optimize=False, loop=0)
-
-
-if __name__ == '__main__':
-    img = Image.open('chicken.png')
-    split_static_image(img, 'out/chicken_split', 'png')
