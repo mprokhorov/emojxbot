@@ -13,6 +13,7 @@ router = Router()
 class Split(StatesGroup):
     choosing_image = State()
     choosing_set = State()
+    done = State()
 
 
 @router.message(Command('split'))
