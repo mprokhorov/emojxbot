@@ -1,3 +1,5 @@
+import io
+
 from PIL import Image, ImageSequence
 from itertools import product
 
@@ -13,9 +15,12 @@ def split_static_image(image):
     tiles = []
     for i, j in grid:
         result = crop_image(image, j, i, j + d, i + d)
-        tiles.append(result)
+        buf = io.BytesIO()
+        result.save(buf, format='PNG')
+        tiles.append(buf)
         # result.save(f'{name}{i}_{j}.{ext}')
     return tiles
+
 
 def split_multi_frame_image(image, name, ext):
     w, h = image.size
