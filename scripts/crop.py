@@ -16,8 +16,7 @@ def split_static_image(image):
     for i, j in grid:
         result = crop_image(image, j, i, j + d, i + d)
         buf = io.BytesIO()
-        image.save(buf, format="PNG")
-        # buf.getvalue()
+        result.save(buf, format='PNG')
         tiles.append(buf)
         # result.save(f'{name}{i}_{j}.{ext}')
     return tiles
