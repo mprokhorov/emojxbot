@@ -16,7 +16,12 @@ class NewEmojiSet(StatesGroup):
     done = State()
 
 
-@router.message(Command("new_emoji_set"))
+@router.message(Command("start"))
+async def cmd_start(message: Message, state: FSMContext):
+    await state.update_data(sets_list=[])
+
+
+@router.message(Command("new"))
 async def cmd_new_emoji_set(message: Message, state: FSMContext):
     await state.set_state(NewEmojiSet.choosing_emoji_set_name)
     await message.answer(
@@ -43,16 +48,18 @@ async def emoji_set_name_chosen_incorrectly(message: Message):
 async def emoji_set_name_title_chosen_correctly(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(chosen_emoji_set_title=message.text)
     data = await state.get_data()
-    await bot.create_new_sticker_set(message.chat.id, f"{data['chosen_emoji_set_name']}_by_emojxbot",
+    await bot.create_new_sticker_set(message.chat.id, f'{data["chosen_emoji_set_name"]}_by_emojxbot',
                                      data['chosen_emoji_set_title'],
-                                     [InputSticker(sticker=white_png, emoji_list=['😁'])],
-                                     "static", "custom_emoji")
+                                     [InputSticker(sticker=white_png, emoji_list=['✂️'])],
+                                     'static', 'custom_emoji')
     await message.answer(
-        text=f"Emoji set was created successfully! You can find it at: "
-             f"t.me/addstickers/{data['chosen_emoji_set_name']}_by_emojxbot"
+        text=f'Emoji set was created successfully! You can find it at: '
+             f't.me/addstickers/{data["chosen_emoji_set_name"]}_by_emojxbot'
     )
-
-    current_emoji_set = await bot.get_sticker_set(f"{data['chosen_emoji_set_name']}_by_emojxbot")
+    sets_list = data['sets_list']
+    sets_list.append(f'{data["chosen_emoji_set_name"]}_by_emojxbot')
+    await state.update_data(sets_list=sets_list)
+    current_emoji_set = await bot.get_sticker_set(f'{data["chosen_emoji_set_name"]}_by_emojxbot')
     await state.set_state(NewEmojiSet.done)
     # sticker_to_delete = current_emoji_set.stickers[0].file_id
     # await bot.delete_sticker_from_set(sticker_to_delete)

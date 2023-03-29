@@ -1,11 +1,15 @@
+import types
+
 from aiogram import Router, F, Bot
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, InputSticker, Sticker, StickerSet
+from aiogram.types import Message, InputSticker, Sticker, StickerSet, BufferedInputFile
+from aiogram.types.reply_keyboard_remove import ReplyKeyboardRemove
 from aiogram.methods import get_sticker_set
 from PIL import Image
 from scripts.crop import split_static_image
+from keyboards.simple_row import make_row_keyboard
 
 router = Router()
 
@@ -39,14 +43,24 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
     # await message.reply(text=f'{type(splitted_image)}')
     await state.update_data(image_to_split=splitted_image)
     await state.set_state(Split.choosing_set)
-    await message.reply(text='Now choose emoji set to which emoji tiles will be added.')
+    print(data['sets_list'])
+    keyboard = make_row_keyboard(data['sets_list'])
+    await message.reply(text='Now choose emoji set to which emoji tiles will be added.', reply_markup=keyboard)
 
 
-@router.message(Split.choosing_set, Command('choose_set'))
+@router.message(Split.choosing_set)
 async def choose_emoji_set(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
+    set_name = message.text
+    if set_name not in data['sets_list']:
+        message.reply('Choose existing set which was created by @emojxbot')
+        return
+    await message.reply("Started!", reply_markup=ReplyKeyboardRemove())
     image = data['image_to_split']
     img_to_split = Image.open(image)
     # split_static_image(img_to_split, f'scripts/out/chicken_split', 'png')
     tiles_to_add = split_static_image(img_to_split)
+    for buf, i in tiles_to_add:
+        text_file = BufferedInputFile(buf, filename=f"pic{i}.png")
 
+        await message.reply(text=i)
