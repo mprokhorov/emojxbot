@@ -1,3 +1,4 @@
+import json
 import types
 
 from aiogram import Router, F, Bot
@@ -52,15 +53,15 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 async def choose_emoji_set(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     set_name = message.text
-    if set_name not in data['sets_list']:
-        message.reply('Choose existing set which was created by @emojxbot')
-        return
+    # if set_name not in data['sets_list']:
+    #     message.reply('Choose existing set which was created by @emojxbot')
+    #     return
     await message.reply("Started!", reply_markup=ReplyKeyboardRemove())
     image = data['image_to_split']
     img_to_split = Image.open(image)
-    # split_static_image(img_to_split, f'scripts/out/chicken_split', 'png')
     tiles_to_add = split_static_image(img_to_split)
-    for buf, i in tiles_to_add:
+    await message.reply(text=len(tiles_to_add))
+    for i, buf in enumerate(tiles_to_add):
         text_file = BufferedInputFile(buf, filename=f"pic{i}.png")
-
-        await message.reply(text=i)
+        await bot.add_sticker_to_set(message.from_user.id, set_name, InputSticker(sticker=text_file.read(64 * 1024),
+                                                                                  emoji_list=['✂️']))
