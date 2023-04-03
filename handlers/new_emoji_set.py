@@ -6,7 +6,7 @@ from aiogram.types import Message, InputSticker
 
 router = Router()
 
-white_png = "BQACAgIAAxkBAAOIZBHOfU5S3Rw1WkZal691TedJT7cAAvIpAAJW7JBI_C6MWrsM7HsvBA"
+initilal_emoji_id = "BQACAgIAAxkBAAIDJGQrT-N9j73KpQ_rLoetiPfeAAHzcwACGywAAjE_WEn-ME34KeKPgi8E"
 
 
 class NewEmojiSet(StatesGroup):
@@ -16,7 +16,7 @@ class NewEmojiSet(StatesGroup):
 
 
 @router.message(Command("start"))
-async def cmd_start(state: FSMContext):
+async def cmd_start(message: Message, state: FSMContext):
     await state.update_data(sets_list=[])
 
 
@@ -49,7 +49,7 @@ async def emoji_set_name_title_chosen_correctly(message: Message, state: FSMCont
     data = await state.get_data()
     await bot.create_new_sticker_set(message.chat.id, f'{data["chosen_emoji_set_name"]}_by_emojxbot',
                                      data['chosen_emoji_set_title'],
-                                     [InputSticker(sticker=white_png, emoji_list=['✂️'])],
+                                     [InputSticker(sticker=initilal_emoji_id, emoji_list=['✂️'])],
                                      'static', 'custom_emoji')
     await message.answer(
         text=f'Emoji set was created successfully! You can find it at: '

@@ -3,7 +3,6 @@ from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, InputSticker, BufferedInputFile
-from aiogram.types.reply_keyboard_remove import ReplyKeyboardRemove
 from PIL import Image
 from scripts.crop import split_static_image
 from keyboards.simple_row import make_row_keyboard
@@ -42,13 +41,14 @@ async def choose_emoji_set(message: Message, state: FSMContext, bot: Bot):
     if set_name not in data['sets_list']:
         await message.reply('Choose existing set which was created by @emojxbot')
         return
-    await message.reply("Started!", reply_markup=ReplyKeyboardRemove())
+    current_emoji_set = await bot.get_sticker_set(f"{data['chosen_emoji_set_name']}_by_emojxbot")
+    sticker_to_delete = current_emoji_set.stickers[0].file_id
+    await bot.delete_sticker_from_set(sticker_to_delete)
     image = data['image_to_split']
     img_to_split = Image.open(image)
     tiles_to_add = split_static_image(img_to_split)
-    await message.reply(str(len(tiles_to_add)))
     for i, buf in enumerate(tiles_to_add):
         text_file = BufferedInputFile(buf, filename=f"pic{i}.png")
         current_emoji = InputSticker(sticker=text_file, emoji_list=['✂️'])
-        print(current_emoji)
         await bot.add_sticker_to_set(message.from_user.id, set_name, current_emoji)
+    await message.reply("Done!", reply_markup=None)
