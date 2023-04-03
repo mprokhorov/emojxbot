@@ -2,8 +2,7 @@ from aiogram import Router, F, Bot
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, InputSticker, Sticker, StickerSet
-from aiogram.methods import get_sticker_set
+from aiogram.types import Message, InputSticker
 
 router = Router()
 
@@ -17,7 +16,7 @@ class NewEmojiSet(StatesGroup):
 
 
 @router.message(Command("start"))
-async def cmd_start(message: Message, state: FSMContext):
+async def cmd_start(state: FSMContext):
     await state.update_data(sets_list=[])
 
 
@@ -59,37 +58,11 @@ async def emoji_set_name_title_chosen_correctly(message: Message, state: FSMCont
     sets_list = data['sets_list']
     sets_list.append(f'{data["chosen_emoji_set_name"]}_by_emojxbot')
     await state.update_data(sets_list=sets_list)
-    current_emoji_set = await bot.get_sticker_set(f'{data["chosen_emoji_set_name"]}_by_emojxbot')
     await state.set_state(NewEmojiSet.done)
-    # sticker_to_delete = current_emoji_set.stickers[0].file_id
-    # await bot.delete_sticker_from_set(sticker_to_delete)
 
 
 @router.message(NewEmojiSet.choosing_emoji_set_title, ~F.text.regexp(r'^.{1,64}$'))
-async def emoji_set_name_title_chosen_incorrectly(message: Message, state: FSMContext):
+async def emoji_set_name_title_chosen_incorrectly(message: Message):
     await message.answer(
         text="Incorrect title"
     )
-
-# @router.message(F.content_type.in_({'document'}))
-# async def emoji_image_chosen(message: Message, state: FSMContext):
-#     print(message.document.file_id)
-
-# @router.message(NewEmojiSet.choosing_first_emoji_image, F.content_type.in_({'document'}))
-# async def emoji_image_chosen(message: Message, state: FSMContext):
-#     await message.answer("Now send me 100x100 .png file pls.")
-#     await state.update_data(chosen_file_id=message.document.file_id)
-#     await state.set_state(NewEmojiSet.choosing_first_emoji_alias)
-#
-#
-# @router.message(NewEmojiSet.choosing_first_emoji_alias, Command("post"))
-# async def post_set(message: Message, state: FSMContext, bot: Bot):
-#     user_data = await state.get_data()
-#     await bot.create_new_sticker_set(message.chat.id, f"{user_data['chosen_emoji_set_name']}_by_emojxbot",
-#                                      user_data['chosen_emoji_set_title'],
-#                                      [InputSticker(sticker=user_data['chosen_file_id'], emoji_list=['😁', ])],
-#                                      "static", "custom_emoji")
-#     await message.answer(
-#         text=f"Sticker set was created successfully! You can find it at: "
-#              f"t.me/addstickers/{user_data['chosen_emoji_set_name']}_by_emojxbot"
-#     )
