@@ -6,19 +6,14 @@ from itertools import product
 def split_static_image(image):
     w, h = image.size
     d = 100
-    grid = product(range(0, h, 100), range(0, w, 100))
-
-    def crop_image(original_img, left, top, right, bottom):
-        return original_img.crop((left, top, right, bottom))
-
+    grid = product(range(0, h, d), range(0, w, d))
     tiles = []
     for i, j in grid:
-        result = crop_image(image, j, i, j + d, i + d)
+        result = image.crop((j, i, j + d, i + d))
         buf = io.BytesIO()
         result.save(buf, format='PNG')
         buf.seek(0)
         tiles.append(buf.getvalue())
-        # result.save(f'{name}{i}_{j}.{ext}')
     return tiles
 
 
