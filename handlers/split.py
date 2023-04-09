@@ -1,22 +1,14 @@
 import os
-from io import BytesIO
-
 from aiogram import Router, F, Bot
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, InputSticker, BufferedInputFile
 from PIL import Image
 from scripts.crop import split_static_image
 from keyboards.simple_row import make_row_keyboard
+from states.split_states import Split
 
 router = Router()
-
-
-class Split(StatesGroup):
-    choosing_image = State()
-    choosing_set = State()
-    done = State()
 
 
 @router.message(Command('split'))
@@ -30,7 +22,7 @@ async def cmd_split(message: Message, state: FSMContext):
 async def get_document(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     document = message.document
-    path = f'images/{document.file_name}'
+    path = f'images/{message.from_user}:{document.file_name}'
     await bot.download(document.file_id, path)
     await state.update_data(image_path=path)
     await state.set_state(Split.choosing_set)
@@ -45,9 +37,13 @@ async def choose_emoji_set(message: Message, state: FSMContext, bot: Bot):
     if set_name not in data['sets_list']:
         await message.reply('Choose existing set which was created by @emojxbot')
         return
-    current_emoji_set = await bot.get_sticker_set(set_name)
-    sticker_to_delete = current_emoji_set.stickers[0].file_id
-    await bot.delete_sticker_from_set(sticker_to_delete)
+    is_empty = data['is_empty']
+    if is_empty[set_name]:
+        current_emoji_set = await bot.get_sticker_set(set_name)
+        sticker_to_delete = current_emoji_set.stickers[0].file_id
+        await bot.delete_sticker_from_set(sticker_to_delete)
+        is_empty[set_name] = False
+        await state.update_data(is_empty=is_empty)
     image_path = data['image_path']
     img_to_split = Image.open(image_path)
     tiles_to_add = split_static_image(img_to_split)
