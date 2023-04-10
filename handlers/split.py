@@ -52,6 +52,6 @@ async def choose_emoji_set(message: Message, state: FSMContext, bot: Bot):
         text_file = BufferedInputFile(buf, filename=f"pic{i}.png")
         current_emoji = InputSticker(sticker=text_file, emoji_list=['✂️'])
         await bot.add_sticker_to_set(message.from_user.id, set_name, current_emoji)
-    await message.reply("Done!", reply_markup=ReplyKeyboardRemove)
+    await message.reply("Done!", reply_markup=ReplyKeyboardRemove())
     os.remove(image_path)
     await state.set_state(Split.done)

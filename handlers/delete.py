@@ -1,16 +1,12 @@
-from aiogram import Router, F, Bot
+from aiogram import Router, Bot
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
+
 from aiogram.types import Message
 from keyboards.simple_row import make_row_keyboard
+from states.delete_states import DeleteSet
 
 router = Router()
-
-
-class DeleteSet(StatesGroup):
-    choosing_set = State()
-    set_deleted = State()
 
 
 @router.message(Command('delete'))
