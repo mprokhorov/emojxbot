@@ -10,7 +10,7 @@ router = Router()
 
 @router.message(Command("start"))
 async def cmd_start(message: Message, state: FSMContext):
-    await state.update_data(sets_list=[], is_empty={})
+    await state.update_data(is_empty={})
 
 
 @router.message(Command("new"))
@@ -48,11 +48,9 @@ async def emoji_set_name_title_chosen_correctly(message: Message, state: FSMCont
         text=f'Emoji set was created successfully! You can find it at: '
              f't.me/addstickers/{data["chosen_emoji_set_name"]}_by_emojxbot'
     )
-    sets_list = data['sets_list']
-    sets_list.append(f'{data["chosen_emoji_set_name"]}_by_emojxbot')
     is_empty = data['is_empty']
     is_empty[f'{data["chosen_emoji_set_name"]}_by_emojxbot'] = True
-    await state.update_data(sets_list=sets_list, is_empty=is_empty)
+    await state.update_data(is_empty=is_empty)
     await state.set_state(New.set_created)
 
 

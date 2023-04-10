@@ -27,7 +27,8 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
     await bot.download(document.file_id, path)
     await state.update_data(image_path=path)
     await state.set_state(Split.choosing_set)
-    keyboard = make_row_keyboard(data['sets_list'])
+    sets_list = data['is_empty'].keys()
+    keyboard = make_row_keyboard(sets_list)
     await message.reply(text='Now choose emoji set to which emoji tiles will be added.', reply_markup=keyboard)
 
 
@@ -35,10 +36,11 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 async def choose_emoji_set(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     set_name = message.text
-    if set_name not in data['sets_list']:
+    is_empty = data['is_empty']
+    set_names = is_empty.keys()
+    if set_name not in set_names:
         await message.reply('Choose existing set which was created by @emojxbot')
         return
-    is_empty = data['is_empty']
     if is_empty[set_name]:
         current_emoji_set = await bot.get_sticker_set(set_name)
         sticker_to_delete = current_emoji_set.stickers[0].file_id
