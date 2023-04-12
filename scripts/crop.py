@@ -2,7 +2,7 @@ import io
 import math
 
 from itertools import product
-from PIL import Image, ImageDraw
+from PIL import Image
 
 
 def split_static_image(image):
