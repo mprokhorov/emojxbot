@@ -17,8 +17,8 @@ async def cmd_start(message: Message, state: FSMContext):
 async def cmd_new_emoji_set(message: Message, state: FSMContext):
     await state.set_state(New.choosing_set_name)
     await message.answer(
-        text="Enter name of sticket set, which will be used in t.me/addstickers/ URLs. Can contain only English "
-             "letters, digits and underscores. Must begin with a letter, can't contain consecutive underscores. URL "
+        text="Enter name of emoji set, which will be used in t.me/addstickers/ URLs. It can contain only English "
+             "letters, digits and underscores. It must begin with a letter, can't contain consecutive underscores. URL "
              "will end in _by_emojxbot. 1-52 characters.")
 
 
@@ -26,12 +26,12 @@ async def cmd_new_emoji_set(message: Message, state: FSMContext):
 async def emoji_set_name_chosen_correctly(message: Message, state: FSMContext):
     await state.update_data(chosen_emoji_set_name=message.text)
     await state.set_state(New.choosing_set_title)
-    await message.answer(text="Now choose sticket set title, 1-64 characters")
+    await message.answer(text="Now choose emoji set title, 1-64 characters")
 
 
 @router.message(New.choosing_set_name, ~F.text.regexp(r'^[a-zA-Z](?!.*__)[a-zA-Z0-9_]{0,51}$'))
 async def emoji_set_name_chosen_incorrectly(message: Message):
-    await message.answer(text="Incorrect sticker set name. "
+    await message.answer(text="Incorrect emoji set name. "
                               "Please, make sure your name meets all conditions."
                          )
 

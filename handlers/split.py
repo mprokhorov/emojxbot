@@ -1,9 +1,11 @@
 import os
-from aiogram import Router, F, Bot
+from aiogram import Router, F, Bot, types
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputSticker, BufferedInputFile
 from PIL import Image
+
+from keyboards.inline_keyboard import make_inline_keyboard
 from scripts.crop import split_static_image
 from keyboards.simple_row import make_row_keyboard
 from states.split_states import Split
@@ -14,8 +16,8 @@ router = Router()
 
 @router.message(Command('split'))
 async def cmd_split(message: Message, state: FSMContext):
-    await message.reply(text='Send one file with extension .png or .jpeg which has height and width divisible by '
-                             '100. Number of tiles should not exceed 200.')
+    await message.reply(text='Send one file with extension .png or .jpeg. Note that'
+                             ' the number of tiles should not exceed 200.')
     await state.set_state(Split.choosing_image)
 
 
@@ -27,20 +29,29 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
     await bot.download(document.file_id, path)
     await state.update_data(image_path=path)
     await state.set_state(Split.choosing_set)
-    sets_list = data['is_empty'].keys()
-    keyboard = make_row_keyboard(sets_list)
-    await message.reply(text='Now choose emoji set to which emoji tiles will be added.', reply_markup=keyboard)
+    builder = make_inline_keyboard(data['is_empty'].keys())
+    await message.answer(
+        "Choose emoji set to which emoji tiles will be added:",
+        reply_markup=builder.as_markup()
+    )
 
 
-@router.message(Split.choosing_set)
-async def choose_emoji_set(message: Message, state: FSMContext, bot: Bot):
+@router.callback_query(Split.choosing_set)
+async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
     data = await state.get_data()
-    set_name = message.text
+    set_name = callback.data
     is_empty = data['is_empty']
     set_names = is_empty.keys()
     if set_name not in set_names:
-        await message.reply('Choose existing set which was created by @emojxbot')
+        await callback.answer(
+            text="This set doesn't exist!",
+            show_alert=True
+        )
         return
+    await callback.answer(
+        text="Started splitting!",
+        show_alert=True
+    )
     if is_empty[set_name]:
         current_emoji_set = await bot.get_sticker_set(set_name)
         sticker_to_delete = current_emoji_set.stickers[0].file_id
@@ -53,7 +64,7 @@ async def choose_emoji_set(message: Message, state: FSMContext, bot: Bot):
     for i, buf in enumerate(tiles_to_add):
         text_file = BufferedInputFile(buf, filename=f"pic{i}.png")
         current_emoji = InputSticker(sticker=text_file, emoji_list=['✂️'])
-        await bot.add_sticker_to_set(message.from_user.id, set_name, current_emoji)
-    await message.reply("Done!", reply_markup=ReplyKeyboardRemove())
+        await bot.add_sticker_to_set(callback.from_user.id, set_name, current_emoji)
+    await callback.message.reply("Done!", reply_markup=ReplyKeyboardRemove())
     os.remove(image_path)
     await state.set_state(Split.done)
