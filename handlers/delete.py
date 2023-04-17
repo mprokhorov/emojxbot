@@ -15,6 +15,12 @@ router = Router()
 async def cmd_split(message: Message, state: FSMContext):
     data = await state.get_data()
     sets_list = data['is_empty'].keys()
+    if len(sets_list) == 0:
+        await message.answer(
+            "You have no emoji sets to delete"
+        )
+        await state.set_state(DeleteSet.set_deleted)
+        return
     await state.set_state(DeleteSet.choosing_set)
     builder = make_inline_keyboard(sets_list)
     await message.answer(

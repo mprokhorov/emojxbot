@@ -1,13 +1,14 @@
+import math
 import os
+from PIL import Image
+
 from aiogram import Router, F, Bot, types
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputSticker, BufferedInputFile
-from PIL import Image
 
 from keyboards.inline_keyboard import make_inline_keyboard
 from scripts.crop import split_static_image
-from keyboards.simple_row import make_row_keyboard
 from states.split_states import Split
 from aiogram.types import ReplyKeyboardRemove
 
@@ -48,10 +49,7 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
             show_alert=True
         )
         return
-    await callback.answer(
-        text="Started splitting!",
-        show_alert=True
-    )
+    progress_message = await callback.message.answer("Splitting stated")
     if is_empty[set_name]:
         current_emoji_set = await bot.get_sticker_set(set_name)
         sticker_to_delete = current_emoji_set.stickers[0].file_id
@@ -61,7 +59,12 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
     image_path = data['image_path']
     img_to_split = Image.open(image_path)
     tiles_to_add = split_static_image(img_to_split)
+    last_progress = -5
     for i, buf in enumerate(tiles_to_add):
+        current_progress = math.ceil(((i+1) / len(tiles_to_add)) * 20) * 5
+        if current_progress > last_progress:
+            await progress_message.edit_text(text=f"Splitting stated: {current_progress}%")
+            last_progress = current_progress
         text_file = BufferedInputFile(buf, filename=f"pic{i}.png")
         current_emoji = InputSticker(sticker=text_file, emoji_list=['✂️'])
         await bot.add_sticker_to_set(callback.from_user.id, set_name, current_emoji)

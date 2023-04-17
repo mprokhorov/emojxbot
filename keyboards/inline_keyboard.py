@@ -6,4 +6,5 @@ def make_inline_keyboard(items: list[str]):
     builder = InlineKeyboardBuilder()
     for item in items:
         builder.add(InlineKeyboardButton(text=item, callback_data=item))
+        builder.adjust(1)
     return builder
