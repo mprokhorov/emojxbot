@@ -13,7 +13,8 @@ async def main():
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
-    redis = Redis(decode_responses=True)
+    redis = Redis(decode_responses=True, host="red-cgv5ot0dh87i4q0jfgg0", port=6379)
+    # redis = Redis(decode_responses=True)
     bot = Bot(token=config.bot_token.get_secret_value())
     dp = Dispatcher(storage=RedisStorage(redis=redis))
     dp.include_routers(new.router, split.router, delete.router)
