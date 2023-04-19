@@ -1,5 +1,6 @@
 import logging
 
+from config_reader import config
 from handlers import new, split, delete
 
 from aiohttp.web import run_app
@@ -8,7 +9,6 @@ from aiohttp.web_app import Application
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiogram import Dispatcher, Router, Bot
 
-TELEGRAM_TOKEN = '6220340550:AAGfZM1bDbkXT3aV9vwHmK7pR4cOHYsZZNQ'
 
 WEBHOOK_HOST = 'https://emojxbot.alwaysdata.net'
 WEBHOOK_PATH = '/bot'
@@ -33,7 +33,7 @@ async def on_shutdown(bot: Bot):
 
 
 def main():
-    bot = Bot(token=TELEGRAM_TOKEN, parse_mode="HTML")
+    bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="HTML")
 
     dispatcher = Dispatcher()
     dispatcher["webhook_url"] = WEBHOOK_URL
