@@ -1,5 +1,7 @@
 import logging
 
+from aiogram.fsm.storage.redis import RedisStorage
+from redis.asyncio.client import Redis
 from config_reader import config
 from handlers import new, split, delete
 
@@ -33,9 +35,14 @@ async def on_shutdown(bot: Bot):
 
 
 def main():
-    bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="HTML")
+    redis = Redis(decode_responses=True,
+                  host=config.redis_host.get_secret_value(),
+                  port=config.redis_port.get_secret_value(),
+                  username=config.redis_username.get_secret_value(),
+                  password=config.redis_password.get_secret_value())
 
-    dispatcher = Dispatcher()
+    bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="HTML")
+    dispatcher = Dispatcher(storage=RedisStorage(redis=redis))
     dispatcher["webhook_url"] = WEBHOOK_URL
     dispatcher.include_routers(router, new.router, split.router, delete.router)
 
