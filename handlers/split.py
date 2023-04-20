@@ -18,7 +18,7 @@ router = Router()
 @router.message(Command('split'))
 async def cmd_split(message: Message, state: FSMContext):
     await message.reply(text='Send one file with extension .png or .jpeg. Note that'
-                             ' the number of tiles should not exceed 200.')
+                             'the number of tiles should not exceed 200.')
     await state.set_state(Split.choosing_image)
 
 
@@ -32,7 +32,7 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
     await state.set_state(Split.choosing_set)
     builder = make_inline_keyboard(data['is_empty'].keys())
     await message.answer(
-        "Choose emoji set to which emoji tiles will be added:",
+        "Select the emoji set to which the tiles will be added:",
         reply_markup=builder.as_markup()
     )
 
@@ -40,7 +40,7 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 @router.message(Split.choosing_image, ~F.document)
 async def get_document(message: Message, state: FSMContext, bot: Bot):
     await message.answer(
-        "Make sure you have sent one file with extension .png or .jpeg"
+        "Make sure you have sent one file with extension .png or .jpeg."
     )
 
 
@@ -52,11 +52,11 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
     set_names = is_empty.keys()
     if set_name not in set_names:
         await callback.answer(
-            text="This set doesn't exist!",
+            text="This emoji set doen't exist.",
             show_alert=True
         )
         return
-    progress_message = await callback.message.answer("Splitting stated")
+    progress_message = await callback.message.answer("Splitting started...")
     if is_empty[set_name]:
         current_emoji_set = await bot.get_sticker_set(set_name)
         sticker_to_delete = current_emoji_set.stickers[0].file_id
@@ -70,11 +70,11 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
     for i, buf in enumerate(tiles_to_add):
         current_progress = math.ceil(((i+1) / len(tiles_to_add)) * 20) * 5
         if current_progress > last_progress:
-            await progress_message.edit_text(text=f"Splitting stated: {current_progress}%")
+            await progress_message.edit_text(text=f"Splitting: {current_progress}%")
             last_progress = current_progress
         text_file = BufferedInputFile(buf, filename=f"pic{i}.png")
         current_emoji = InputSticker(sticker=text_file, emoji_list=['✂️'])
         await bot.add_sticker_to_set(callback.from_user.id, set_name, current_emoji)
-    await callback.message.reply("Done!", reply_markup=ReplyKeyboardRemove())
+    await callback.message.reply("Done.", reply_markup=ReplyKeyboardRemove())
     os.remove(image_path)
     await state.set_state(Split.done)
