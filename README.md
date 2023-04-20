@@ -1,6 +1,6 @@
 # emojxbot
 
-Link to bot: https://t.me/emojxbot
+Link to bot: [t.me/emojxbot](https://t.me/emojxbot)
 
 ## Requirements
 
