@@ -2,9 +2,10 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-from redis.asyncio.client import Redis
 from aiogram.fsm.storage.redis import RedisStorage
-from config_reader import config
+from redis.asyncio.client import Redis
+
+from config import config
 from handlers import new, split, delete
 
 

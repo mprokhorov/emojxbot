@@ -3,7 +3,7 @@ from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputSticker
 
-from config_reader import config
+from config import config
 from states.new_states import New
 
 router = Router()

@@ -1,16 +1,16 @@
 import math
 import os
-from PIL import Image
 
+from PIL import Image
 from aiogram import Router, F, Bot, types
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InputSticker, BufferedInputFile
+from aiogram.types import ReplyKeyboardRemove
 
 from keyboards.inline_keyboard import make_inline_keyboard
 from scripts.crop import split_static_image
 from states.split_states import Split
-from aiogram.types import ReplyKeyboardRemove
 
 router = Router()
 
@@ -68,7 +68,7 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
     tiles_to_add = split_static_image(img_to_split)
     last_progress = -5
     for i, buf in enumerate(tiles_to_add):
-        current_progress = math.ceil(((i+1) / len(tiles_to_add)) * 20) * 5
+        current_progress = math.ceil(((i + 1) / len(tiles_to_add)) * 20) * 5
         if current_progress > last_progress:
             await progress_message.edit_text(text=f"Splitting: {current_progress}%")
             last_progress = current_progress

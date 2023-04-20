@@ -3,8 +3,8 @@ from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
-from states.delete_states import DeleteSet
 from keyboards.inline_keyboard import make_inline_keyboard
+from states.delete_states import DeleteSet
 
 router = Router()
 

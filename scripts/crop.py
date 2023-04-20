@@ -1,7 +1,7 @@
 import io
 import math
-
 from itertools import product
+
 from PIL import Image
 
 

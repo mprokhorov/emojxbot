@@ -1,15 +1,14 @@
 import logging
 
+from aiogram import Dispatcher, Router, Bot
 from aiogram.fsm.storage.redis import RedisStorage
-from redis.asyncio.client import Redis
-from config_reader import config
-from handlers import new, split, delete
-
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp.web import run_app
 from aiohttp.web_app import Application
+from redis.asyncio.client import Redis
 
-from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
-from aiogram import Dispatcher, Router, Bot
+from config import config
+from handlers import new, split, delete
 
 WEBHOOK_HOST = config.webhook_host.get_secret_value()
 WEBHOOK_PATH = config.webhook_path.get_secret_value()
@@ -28,9 +27,7 @@ async def on_startup(bot: Bot, webhook_url: str):
 
 @router.shutdown()
 async def on_shutdown(bot: Bot):
-    logging.warning("Shutting down..")
     await bot.delete_webhook()
-    logging.warning("Bye!")
 
 
 def main():
