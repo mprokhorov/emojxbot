@@ -11,13 +11,12 @@ from aiohttp.web_app import Application
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiogram import Dispatcher, Router, Bot
 
-
-WEBHOOK_HOST = 'https://emojxbot.alwaysdata.net'
-WEBHOOK_PATH = '/bot'
+WEBHOOK_HOST = config.webhook_host.get_secret_value()
+WEBHOOK_PATH = config.webhook_path.get_secret_value()
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
-WEBAPP_HOST = '::'
-WEBAPP_PORT = 8350
+WEBAPP_HOST = config.webapp_host.get_secret_value()
+WEBAPP_PORT = config.webapp_port.get_secret_value()
 
 router = Router()
 
