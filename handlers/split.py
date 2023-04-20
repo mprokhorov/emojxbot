@@ -17,8 +17,8 @@ router = Router()
 
 @router.message(Command('split'))
 async def cmd_split(message: Message, state: FSMContext):
-    await message.reply(text='Send one file with extension .png or .jpeg. Note that'
-                             'the number of tiles should not exceed 200.')
+    await message.reply(text='Send one file with extension .png or .jpeg. Note that the number of tiles should '
+                             'not exceed 200.')
     await state.set_state(Split.choosing_image)
 
 
