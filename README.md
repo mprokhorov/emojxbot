@@ -1,5 +1,7 @@
 # emojxbot
 
+Link to bot: https://t.me/emojxbot
+
 ## Requirements
 
 - Python 3.11
