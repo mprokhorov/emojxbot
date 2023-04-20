@@ -56,6 +56,7 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
             show_alert=True
         )
         return
+    await callback.answer()
     progress_message = await callback.message.answer("Splitting started...")
     if is_empty[set_name]:
         current_emoji_set = await bot.get_sticker_set(set_name)
