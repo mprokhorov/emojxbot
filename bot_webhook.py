@@ -8,7 +8,7 @@ from aiohttp.web_app import Application
 from redis.asyncio.client import Redis
 
 from config import config
-from handlers import new, split, delete
+from routers import new, split, delete
 
 WEBHOOK_HOST = config.webhook_host.get_secret_value()
 WEBHOOK_PATH = config.webhook_path.get_secret_value()

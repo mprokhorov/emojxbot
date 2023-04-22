@@ -6,7 +6,7 @@ from aiogram.fsm.storage.redis import RedisStorage
 from redis.asyncio.client import Redis
 
 from config import config
-from handlers import new, split, delete
+from routers import new, split, delete
 
 
 async def main():

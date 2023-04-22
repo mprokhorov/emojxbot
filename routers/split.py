@@ -9,7 +9,7 @@ from aiogram.types import Message, InputSticker, BufferedInputFile
 from aiogram.types import ReplyKeyboardRemove
 
 from keyboards.inline_keyboard import make_inline_keyboard
-from scripts.crop import split_static_image
+from modules.crop import split_static_image
 from states.split_states import Split
 
 router = Router()
