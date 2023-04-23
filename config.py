@@ -17,8 +17,8 @@ class Settings(BaseSettings):
     webapp_port: SecretStr
 
     class Config:
-        env_file = '.env'
-        env_file_encoding = 'utf-8'
+        env_file = ".env"
+        env_file_encoding = "utf-8"
 
 
 config = Settings()
