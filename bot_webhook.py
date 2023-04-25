@@ -9,6 +9,7 @@ from redis.asyncio.client import Redis
 
 from config import config
 from routers import new, split, delete
+from ui_commands import set_ui_commands
 
 WEBHOOK_HOST = config.webhook_host.get_secret_value()
 WEBHOOK_PATH = config.webhook_path.get_secret_value()
@@ -41,6 +42,7 @@ def main():
     dispatcher = Dispatcher(storage=RedisStorage(redis=redis))
     dispatcher["webhook_url"] = WEBHOOK_URL
     dispatcher.include_routers(router, new.router, split.router, delete.router)
+    set_ui_commands(bot)
 
     app = Application()
 

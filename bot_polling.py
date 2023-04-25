@@ -7,6 +7,7 @@ from redis.asyncio.client import Redis
 
 from config import config
 from routers import new, split, delete
+from ui_commands import set_ui_commands
 
 
 async def main():
@@ -22,6 +23,7 @@ async def main():
     bot = Bot(token=config.bot_token.get_secret_value())
     dp = Dispatcher(storage=RedisStorage(redis=redis))
     dp.include_routers(new.router, split.router, delete.router)
+    await set_ui_commands(bot)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
