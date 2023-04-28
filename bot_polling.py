@@ -24,7 +24,6 @@ async def main():
     dp = Dispatcher(storage=RedisStorage(redis=redis))
     dp.include_routers(new.router, split.router, delete.router, forwarded.router)
     await set_ui_commands(bot)
-    await set_ui_commands(bot)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
