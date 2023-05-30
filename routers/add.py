@@ -67,19 +67,19 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
     image_for_emoji = Image.open(image_path)
     w, h = image_for_emoji.size
     if w == h:
-        resized_image = image_for_emoji.resize(100, 100)
+        resized_image = image_for_emoji.resize((100, 100))
     elif w < h:
         img = Image.new("RGBA", (h, h), (255, 0, 0, 0))
         back_im = img.copy()
         back_im.paste(image_for_emoji, ((h - w) // 2, 0))
         resized_image = back_im
-        resized_image = resized_image.resize(100, 100)
+        resized_image = resized_image.resize((100, 100))
     elif w > h:
         img = Image.new("RGBA", (w, w), (255, 0, 0, 0))
         back_im = img.copy()
         back_im.paste(image_for_emoji, (0, (w - h) // 2))
         resized_image = back_im
-        resized_image = resized_image.resize(100, 100)
+        resized_image = resized_image.resize((100, 100))
     buf = io.BytesIO()
     resized_image.save(buf, format="PNG")
     buf.seek(0)
