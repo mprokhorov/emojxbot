@@ -86,3 +86,11 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
     text_file = BufferedInputFile(buf.getvalue(), filename=f"pic1.png")
     current_emoji = InputSticker(sticker=text_file, emoji_list=['✂️'])
     await bot.add_sticker_to_set(callback.from_user.id, set_name, current_emoji)
+    await callback.message.reply("Done.", reply_markup=ReplyKeyboardRemove())
+    os.remove(image_path)
+    await state.set_state(Add.done)
+
+@router.message()
+async def delete_set(message: Message, state: FSMContext, bot: Bot):
+    attrs = vars(message)
+    print('\n'.join("%s: %s" % item for item in attrs.items()))

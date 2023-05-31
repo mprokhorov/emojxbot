@@ -8,7 +8,7 @@ from aiohttp.web_app import Application
 from redis.asyncio.client import Redis
 
 from config import config
-from routers import new, split, delete, forwarded
+from routers import new, split, delete, forwarded, add
 from ui_commands import set_ui_commands
 
 WEBHOOK_HOST = config.webhook_host.get_secret_value()
@@ -41,7 +41,7 @@ def main():
     bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="HTML")
     dispatcher = Dispatcher(storage=RedisStorage(redis=redis))
     dispatcher["webhook_url"] = WEBHOOK_URL
-    dispatcher.include_routers(router, new.router, split.router, delete.router, forwarded.router)
+    dispatcher.include_routers(router, new.router, split.router, delete.router, forwarded.router, add.router)
     set_ui_commands(bot)
 
     app = Application()
