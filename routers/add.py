@@ -1,5 +1,4 @@
 import io
-import math
 import os
 
 from PIL import Image
@@ -10,7 +9,6 @@ from aiogram.types import Message, InputSticker, BufferedInputFile
 from aiogram.types import ReplyKeyboardRemove
 
 from keyboards.inline_keyboard import make_inline_keyboard
-from modules.crop import split_static_image
 from states.add_states import Add
 
 router = Router()
@@ -18,8 +16,23 @@ router = Router()
 
 @router.message(Command("add"))
 async def cmd_add(message: Message, state: FSMContext):
-    await message.reply(text="Send one file which will be used to make an emoji.")
+    await message.reply(text="Send one image which will be used to make an emoji.")
     await state.set_state(Add.choosing_image)
+
+
+@router.message(Add.choosing_image, F.sticker)
+async def get_document(message: Message, state: FSMContext, bot: Bot):
+    data = await state.get_data()
+    sticker = message.sticker
+    path = f"images/{message.from_user.id}:{23434}"
+    await bot.download(sticker.file_id, path)
+    await state.update_data(image_path=path)
+    await state.set_state(Add.choosing_set)
+    builder = make_inline_keyboard(data["is_empty"].keys())
+    await message.answer(
+        "Select the emoji set to which the tiles will be added:",
+        reply_markup=builder.as_markup()
+    )
 
 
 @router.message(Add.choosing_image, F.document)
@@ -37,10 +50,10 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
     )
 
 
-@router.message(Add.choosing_image, ~F.document)
+@router.message(Add.choosing_image)
 async def get_document(message: Message, state: FSMContext, bot: Bot):
     await message.answer(
-        "Make sure you have sent one file with extension .png or .jpeg."
+        "Make sure you have sent one image."
     )
 
 
@@ -90,7 +103,13 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
     os.remove(image_path)
     await state.set_state(Add.done)
 
-@router.message()
-async def delete_set(message: Message, state: FSMContext, bot: Bot):
+
+@router.message(Command("test"))
+async def cmd_test(message: Message, state: FSMContext):
+    await state.set_state(Add.test)
+
+
+@router.message(Add.test)
+async def print_message(message: Message, state: FSMContext, bot: Bot):
     attrs = vars(message)
-    print('\n'.join("%s: %s" % item for item in attrs.items()))
+    await message.answer('\n'.join("%s: %s" % item for item in attrs.items()))
