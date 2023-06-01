@@ -24,7 +24,7 @@ async def cmd_add(message: Message, state: FSMContext):
 async def get_document(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     sticker = message.sticker
-    path = f"images/{message.from_user.id}:{23434}"
+    path = f"images/{message.from_user.id}.webp"
     await bot.download(sticker.file_id, path)
     await state.update_data(image_path=path)
     await state.set_state(Add.choosing_set)
@@ -39,8 +39,24 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 async def get_document(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     document = message.document
-    path = f"images/{message.from_user.id}:{document.file_name}"
+    path = f"images/fuck"
+    print(path)
     await bot.download(document.file_id, path)
+    await state.update_data(image_path=path)
+    await state.set_state(Add.choosing_set)
+    builder = make_inline_keyboard(data["is_empty"].keys())
+    await message.answer(
+        "Select the emoji set to which the tiles will be added:",
+        reply_markup=builder.as_markup()
+    )
+
+
+@router.message(Add.choosing_image, F.photo)
+async def get_document(message: Message, state: FSMContext, bot: Bot):
+    data = await state.get_data()
+    photo = message.photo[-1]
+    path = f"images/{message.from_user.id}.png"
+    await bot.download(photo.file_id, path)
     await state.update_data(image_path=path)
     await state.set_state(Add.choosing_set)
     builder = make_inline_keyboard(data["is_empty"].keys())

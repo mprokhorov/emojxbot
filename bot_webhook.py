@@ -43,15 +43,12 @@ def main():
     dispatcher["webhook_url"] = WEBHOOK_URL
     dispatcher.include_routers(router, new.router, split.router, delete.router, forwarded.router, add.router)
     set_ui_commands(bot)
-
     app = Application()
-
     SimpleRequestHandler(
         dispatcher=dispatcher,
         bot=bot,
     ).register(app, path=WEBHOOK_PATH)
     setup_application(app, dispatcher, bot=bot)
-
     run_app(app, host=WEBAPP_HOST, port=WEBAPP_PORT)
 
 

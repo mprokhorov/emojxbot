@@ -13,7 +13,7 @@ def resize_forwarded_from(res_path, save_as):
     vadim = Image.open(res_path)
     w, h = vadim.size
     vadimRGB = vadim.convert("RGB")
-    r, g, b = vadimRGB.getpixel((0, h / 2))
+    r, g, b = vadimRGB.getpixel((0, h // 2))
     flag = True
     if w < target_w or h < target_h:
         width_M = target_w / w
