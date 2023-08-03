@@ -14,9 +14,9 @@ from states.add_states import Add
 router = Router()
 
 
-@router.message(Command("add"))
+@router.message(Command('add'))
 async def cmd_add(message: Message, state: FSMContext):
-    await message.reply(text="Send one image which will be used to make an emoji.")
+    await message.reply(text='Send one image which will be used to make an emoji.')
     await state.set_state(Add.choosing_image)
 
 
@@ -24,13 +24,13 @@ async def cmd_add(message: Message, state: FSMContext):
 async def get_document(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     sticker = message.sticker
-    path = f"images/{message.from_user.id}.webp"
+    path = f'images/{message.from_user.id}.webp'
     await bot.download(sticker.file_id, path)
     await state.update_data(image_path=path)
     await state.set_state(Add.choosing_set)
-    builder = make_inline_keyboard(data["is_empty"].keys())
+    builder = make_inline_keyboard(data['is_empty'].keys())
     await message.answer(
-        "Select the emoji set to which the tiles will be added:",
+        'Select the emoji set to which the tiles will be added:',
         reply_markup=builder.as_markup()
     )
 
@@ -39,14 +39,14 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 async def get_document(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     document = message.document
-    path = f"images/fuck"
+    path = f'images/fuck'
     print(path)
     await bot.download(document.file_id, path)
     await state.update_data(image_path=path)
     await state.set_state(Add.choosing_set)
-    builder = make_inline_keyboard(data["is_empty"].keys())
+    builder = make_inline_keyboard(data['is_empty'].keys())
     await message.answer(
-        "Select the emoji set to which the tiles will be added:",
+        'Select the emoji set to which the tiles will be added:',
         reply_markup=builder.as_markup()
     )
 
@@ -55,13 +55,13 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 async def get_document(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     photo = message.photo[-1]
-    path = f"images/{message.from_user.id}.png"
+    path = f'images/{message.from_user.id}.png'
     await bot.download(photo.file_id, path)
     await state.update_data(image_path=path)
     await state.set_state(Add.choosing_set)
-    builder = make_inline_keyboard(data["is_empty"].keys())
+    builder = make_inline_keyboard(data['is_empty'].keys())
     await message.answer(
-        "Select the emoji set to which the tiles will be added:",
+        'Select the emoji set to which the tiles will be added:',
         reply_markup=builder.as_markup()
     )
 
@@ -69,7 +69,7 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 @router.message(Add.choosing_image)
 async def get_document(message: Message, state: FSMContext, bot: Bot):
     await message.answer(
-        "Make sure you have sent one image."
+        'Make sure you have sent one image.'
     )
 
 
@@ -77,11 +77,11 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
     data = await state.get_data()
     set_name = callback.data
-    is_empty = data["is_empty"]
+    is_empty = data['is_empty']
     set_names = is_empty.keys()
     if set_name not in set_names:
         await callback.answer(
-            text="This emoji set doen't exist.",
+            text='This emoji set doen\'t exist.',
             show_alert=True
         )
         return
@@ -92,35 +92,35 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
         await bot.delete_sticker_from_set(sticker_to_delete)
         is_empty[set_name] = False
         await state.update_data(is_empty=is_empty)
-    image_path = data["image_path"]
+    image_path = data['image_path']
     image_for_emoji = Image.open(image_path)
     w, h = image_for_emoji.size
     if w == h:
         resized_image = image_for_emoji.resize((100, 100))
     elif w < h:
-        img = Image.new("RGBA", (h, h), (255, 0, 0, 0))
+        img = Image.new('RGBA', (h, h), (255, 0, 0, 0))
         back_im = img.copy()
         back_im.paste(image_for_emoji, ((h - w) // 2, 0))
         resized_image = back_im
         resized_image = resized_image.resize((100, 100))
     elif w > h:
-        img = Image.new("RGBA", (w, w), (255, 0, 0, 0))
+        img = Image.new('RGBA', (w, w), (255, 0, 0, 0))
         back_im = img.copy()
         back_im.paste(image_for_emoji, (0, (w - h) // 2))
         resized_image = back_im
         resized_image = resized_image.resize((100, 100))
     buf = io.BytesIO()
-    resized_image.save(buf, format="PNG")
+    resized_image.save(buf, format='PNG')
     buf.seek(0)
-    text_file = BufferedInputFile(buf.getvalue(), filename=f"pic1.png")
+    text_file = BufferedInputFile(buf.getvalue(), filename=f'pic1.png')
     current_emoji = InputSticker(sticker=text_file, emoji_list=['✂️'])
     await bot.add_sticker_to_set(callback.from_user.id, set_name, current_emoji)
-    await callback.message.reply("Done.", reply_markup=ReplyKeyboardRemove())
+    await callback.message.reply('Done.', reply_markup=ReplyKeyboardRemove())
     os.remove(image_path)
     await state.set_state(Add.done)
 
 
-@router.message(Command("test"))
+@router.message(Command('test'))
 async def cmd_test(message: Message, state: FSMContext):
     await state.set_state(Add.test)
 
@@ -128,4 +128,4 @@ async def cmd_test(message: Message, state: FSMContext):
 @router.message(Add.test)
 async def print_message(message: Message, state: FSMContext, bot: Bot):
     attrs = vars(message)
-    await message.answer('\n'.join("%s: %s" % item for item in attrs.items()))
+    await message.answer('\n'.join('%s: %s' % item for item in attrs.items()))

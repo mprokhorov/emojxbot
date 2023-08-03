@@ -10,26 +10,26 @@ from states.forwarded_states import Forwarded
 router = Router()
 
 
-@router.message(Command("forwarded"))
+@router.message(Command('forwarded'))
 async def cmd_split(message: Message, state: FSMContext):
-    await message.reply(text="Send one file with extension .png.")
+    await message.reply(text='Send one file with extension .png.')
     await state.set_state(Forwarded.choosing_image)
 
 
 @router.message(Forwarded.choosing_image, F.document)
 async def get_document(message: Message, state: FSMContext, bot: Bot):
     document = message.document
-    path = f"images/forwarded_from_{message.from_user.id}.png"
+    path = f'images/forwarded_from_{message.from_user.id}.png'
     await bot.download(document.file_id, path)
     await state.update_data(image_path=path)
-    resize_forwarded_from(path, f"images/forwarded_from_{message.from_user.id}.gif")
+    resize_forwarded_from(path, f'images/forwarded_from_{message.from_user.id}.gif')
     await state.set_state(Forwarded.done)
     await SendAnimation(chat_id=message.from_user.id,
-                        animation=FSInputFile(f"images/forwarded_from_{message.from_user.id}.gif"))
+                        animation=FSInputFile(f'images/forwarded_from_{message.from_user.id}.gif'))
 
 
 @router.message(Forwarded.choosing_image, ~F.document)
 async def get_document(message: Message, state: FSMContext, bot: Bot):
     await message.answer(
-        "Make sure you have sent one file with extension .png or .jpeg."
+        'Make sure you have sent one file with extension .png or .jpeg.'
     )

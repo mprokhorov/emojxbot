@@ -13,7 +13,7 @@ from ui_commands import set_ui_commands
 
 WEBHOOK_HOST = config.webhook_host.get_secret_value()
 WEBHOOK_PATH = config.webhook_path.get_secret_value()
-WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
+WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 
 WEBAPP_HOST = config.webapp_host.get_secret_value()
 WEBAPP_PORT = config.webapp_port.get_secret_value()
@@ -38,9 +38,9 @@ def main():
                   username=config.redis_username.get_secret_value(),
                   password=config.redis_password.get_secret_value())
 
-    bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="HTML")
+    bot = Bot(token=config.bot_token.get_secret_value(), parse_mode='HTML')
     dispatcher = Dispatcher(storage=RedisStorage(redis=redis))
-    dispatcher["webhook_url"] = WEBHOOK_URL
+    dispatcher['webhook_url'] = WEBHOOK_URL
     dispatcher.include_routers(router, new.router, split.router, delete.router, forwarded.router, add.router)
     set_ui_commands(bot)
     app = Application()
@@ -52,6 +52,6 @@ def main():
     run_app(app, host=WEBAPP_HOST, port=WEBAPP_PORT)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     main()

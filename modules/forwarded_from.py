@@ -8,10 +8,10 @@ def resize_forwarded_from(res_path, save_as):
     target_h = 60
     source_gif_frames = []
     for i in range(136):
-        source_gif_frames.append(Image.open(f"modules/frames/frame_{str(i).zfill(3)}_delay-0.04s.png"))
+        source_gif_frames.append(Image.open(f'modules/frames/frame_{str(i).zfill(3)}_delay-0.04s.png'))
     lower_image = Image.open(res_path)
     w, h = lower_image.size
-    lower_image_RGB = lower_image.convert("RGB")
+    lower_image_RGB = lower_image.convert('RGB')
     r, g, b = lower_image_RGB.getpixel((0, h // 2))
     flag = True
     if w < target_w or h < target_h:
@@ -33,7 +33,7 @@ def resize_forwarded_from(res_path, save_as):
             flag = False
     output_gif_frames = []
     for output_gif_frame in source_gif_frames:
-        img = Image.new("RGB", (320, 240), (r, g, b))
+        img = Image.new('RGB', (320, 240), (r, g, b))
         img.paste(output_gif_frame, (0, 0))
         if flag:
             img.paste(new_vadim, ((320 - math.ceil(w * height_M)) // 2, 180))
