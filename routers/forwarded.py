@@ -29,7 +29,7 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 
 
 @router.message(Forwarded.choosing_image, ~F.document)
-async def get_document(message: Message, state: FSMContext, bot: Bot):
+async def multiple_documents_error(message: Message, state: FSMContext, bot: Bot):
     await message.answer(
         'Make sure you have sent one file with extension .png or .jpeg.'
     )

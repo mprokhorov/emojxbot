@@ -21,7 +21,7 @@ async def cmd_add(message: Message, state: FSMContext):
 
 
 @router.message(Add.choosing_image, F.sticker)
-async def get_document(message: Message, state: FSMContext, bot: Bot):
+async def add_sticker(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     sticker = message.sticker
     path = f'images/{message.from_user.id}.webp'
@@ -36,11 +36,10 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 
 
 @router.message(Add.choosing_image, F.document)
-async def get_document(message: Message, state: FSMContext, bot: Bot):
+async def add_document(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     document = message.document
-    path = f'images/fuck'
-    print(path)
+    path = f'images/{document.file_name}'
     await bot.download(document.file_id, path)
     await state.update_data(image_path=path)
     await state.set_state(Add.choosing_set)
@@ -52,7 +51,7 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 
 
 @router.message(Add.choosing_image, F.photo)
-async def get_document(message: Message, state: FSMContext, bot: Bot):
+async def add_photo(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     photo = message.photo[-1]
     path = f'images/{message.from_user.id}.png'
@@ -67,14 +66,14 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 
 
 @router.message(Add.choosing_image)
-async def get_document(message: Message, state: FSMContext, bot: Bot):
+async def multiple_images_error(message: Message, state: FSMContext, bot: Bot):
     await message.answer(
         'Make sure you have sent one image.'
     )
 
 
 @router.callback_query(Add.choosing_set)
-async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
+async def finalize(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
     data = await state.get_data()
     set_name = callback.data
     is_empty = data['is_empty']
@@ -118,14 +117,3 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
     await callback.message.reply('Done.', reply_markup=ReplyKeyboardRemove())
     os.remove(image_path)
     await state.set_state(Add.done)
-
-
-@router.message(Command('test'))
-async def cmd_test(message: Message, state: FSMContext):
-    await state.set_state(Add.test)
-
-
-@router.message(Add.test)
-async def print_message(message: Message, state: FSMContext, bot: Bot):
-    attrs = vars(message)
-    await message.answer('\n'.join('%s: %s' % item for item in attrs.items()))

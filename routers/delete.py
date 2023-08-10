@@ -11,7 +11,7 @@ router = Router()
 
 
 @router.message(Command('delete'))
-async def cmd_split(message: Message, state: FSMContext):
+async def cmd_delete(message: Message, state: FSMContext):
     data = await state.get_data()
     sets_list = data['is_empty'].keys()
     if len(sets_list) == 0:

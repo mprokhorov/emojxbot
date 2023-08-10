@@ -5,4 +5,3 @@ class Add(StatesGroup):
     choosing_image = State()
     choosing_set = State()
     done = State()
-    test = State()

@@ -15,7 +15,7 @@ async def cmd_start(message: Message, state: FSMContext):
 
 
 @router.message(Command('new'))
-async def cmd_new_emoji_set(message: Message, state: FSMContext):
+async def cmd_new(message: Message, state: FSMContext):
     await state.set_state(New.choosing_set_name)
     await message.answer(
         text='Enter name of emoji set, which will be used in t.me/addstickers/ URLs. It can contain only English '
@@ -24,21 +24,21 @@ async def cmd_new_emoji_set(message: Message, state: FSMContext):
 
 
 @router.message(New.choosing_set_name, F.text.regexp(r'^[a-zA-Z](?!.*__)[a-zA-Z0-9_]{0,51}$'))
-async def emoji_set_name_chosen_correctly(message: Message, state: FSMContext):
+async def correct_name(message: Message, state: FSMContext):
     await state.update_data(chosen_emoji_set_name=message.text)
     await state.set_state(New.choosing_set_title)
     await message.answer(text='Choose title for your emoji set. It may contain up to 64 characters.')
 
 
 @router.message(New.choosing_set_name, ~F.text.regexp(r'^[a-zA-Z](?!.*__)[a-zA-Z0-9_]{0,51}$'))
-async def emoji_set_name_chosen_incorrectly(message: Message):
+async def incorrect_name_error(message: Message):
     await message.answer(text='Incorrect name. '
                               'Please, make sure your name meets all requirements and try again.'
                          )
 
 
 @router.message(New.choosing_set_title, F.text.regexp(r'^.{1,64}$'))
-async def emoji_set_name_title_chosen_correctly(message: Message, state: FSMContext, bot: Bot):
+async def correct_title(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(chosen_emoji_set_title=message.text)
     data = await state.get_data()
     await bot.create_new_sticker_set(message.chat.id, f'{data["chosen_emoji_set_name"]}_by_emojxbot',
@@ -56,7 +56,7 @@ async def emoji_set_name_title_chosen_correctly(message: Message, state: FSMCont
 
 
 @router.message(New.choosing_set_title, ~F.text.regexp(r'^.{1,64}$'))
-async def emoji_set_name_title_chosen_incorrectly(message: Message):
+async def incorrect_title_error(message: Message):
     await message.answer(
         text='Incorrect title. Please, make sure your title meets all requirements and try again.'
     )

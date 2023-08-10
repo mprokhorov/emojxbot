@@ -38,14 +38,14 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 
 
 @router.message(Split.choosing_image, ~F.document)
-async def get_document(message: Message, state: FSMContext, bot: Bot):
+async def multiple_documents_error(message: Message, state: FSMContext, bot: Bot):
     await message.answer(
         'Make sure you have sent one file with extension .png or .jpeg.'
     )
 
 
 @router.callback_query(Split.choosing_set)
-async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
+async def finalize(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
     data = await state.get_data()
     set_name = callback.data
     is_empty = data['is_empty']
