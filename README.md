@@ -30,7 +30,7 @@ $ pip install -r requirements.txt
 ### Start long polling:
 
 ```bash
-$ cd weather-bot/bot
+$ cd emojxbot
 $ source .venv/bin/activate
 $ python3 bot_polling.py
 ```
