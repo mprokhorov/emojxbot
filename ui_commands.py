@@ -8,7 +8,8 @@ async def set_ui_commands(bot: Bot):
         BotCommand(command='split', description='Split image to tiles'),
         BotCommand(command='add', description='Make an emoji'),
         BotCommand(command='delete', description='Delete set'),
-        BotCommand(command='forwarded', description='Make a GIF')
+        BotCommand(command='forwarded', description='Make a GIF'),
+        BotCommand(command='liquidated', description='Make a photo')
     ]
     await bot.set_my_commands(
         commands=commands,
