@@ -49,7 +49,7 @@ def main():
     app = Application()
     SimpleRequestHandler(dispatcher=dispatcher, bot=bot).register(app, path=WEBHOOK_PATH)
     setup_application(app, dispatcher, bot=bot)
-    run_app(app, host=WEBAPP_HOST, port=WEBAPP_PORT)
+    run_app(app, host=WEBAPP_HOST, port=int(WEBAPP_PORT))
 
 
 if __name__ == '__main__':
