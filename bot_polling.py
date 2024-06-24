@@ -6,23 +6,24 @@ from aiogram.fsm.storage.redis import RedisStorage
 from redis.asyncio.client import Redis
 
 from config import config
-from routers import new, split, delete, forwarded, add, test, liquidated
+from routers import add, delete, forwarded, liquidated, new, split, test
 from ui_commands import set_ui_commands
 
 
 async def main():
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+    redis = Redis(
+        decode_responses=True,
+        host=config.redis_host.get_secret_value(),
+        port=config.redis_port.get_secret_value(),
+        username=config.redis_username.get_secret_value(),
+        password=config.redis_password.get_secret_value()
     )
-    redis = Redis(decode_responses=True,
-                  host=config.redis_host.get_secret_value(),
-                  port=config.redis_port.get_secret_value(),
-                  username=config.redis_username.get_secret_value(),
-                  password=config.redis_password.get_secret_value())
     bot = Bot(token=config.bot_token.get_secret_value())
     dp = Dispatcher(storage=RedisStorage(redis=redis))
-    dp.include_routers(new.router, split.router, delete.router, forwarded.router, add.router, test.router, liquidated.router)
+    dp.include_routers(
+        add.router, delete.router, forwarded.router, liquidated.router, new.router, split.router, test.router
+    )
     await set_ui_commands(bot)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)

@@ -3,7 +3,7 @@ import math
 from PIL import Image
 
 
-def resize_forwarded_from(res_path, save_as):
+def resize_and_overlay(res_path, save_as):
     target_w = 320
     target_h = 60
     source_gif_frames = []

@@ -1,7 +1,6 @@
 from aiogram import Router, Bot, types
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.methods import EditMessageText
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from keyboards.inline_keyboard import make_inline_keyboard
@@ -20,10 +19,7 @@ async def cmd_delete(message: Message, state: FSMContext):
         return
     await state.set_state(DeleteSet.choosing_set)
     builder = make_inline_keyboard(sets_list)
-    delete_list_message = await message.answer(
-        'Click on the set you want to delete:',
-        reply_markup=builder.as_markup()
-    )
+    delete_list_message = await message.answer('Click on the set you want to delete:', reply_markup=builder.as_markup())
     await state.update_data(chat_id=delete_list_message.chat.id)
     await state.update_data(message_id=delete_list_message.message_id)
 
@@ -38,7 +34,7 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
         is_empty.pop(set_name)
         await state.update_data(is_empty=is_empty)
         await callback.message.reply(f'Emoji set {set_name} was deleted.', reply_markup=ReplyKeyboardRemove())
-        # await state.set_state(DeleteSet.set_deleted)
+        await state.set_state(DeleteSet.set_deleted)
         await callback.answer()
     else:
         await callback.message.reply(f'Emoji set {set_name} was not deleted.')
@@ -47,14 +43,17 @@ async def delete_set(callback: types.CallbackQuery, state: FSMContext, bot: Bot)
     data = await state.get_data()
 
     if len(is_empty) == 0:
-        await EditMessageText(chat_id=data['chat_id'],
-                              message_id=data['message_id'],
-                              text='The list of emoji sets is empty.',
-                              reply_markup=make_inline_keyboard([]).as_markup())
+        await bot.edit_message_text(
+            chat_id=data['chat_id'],
+            message_id=data['message_id'],
+            text='The list of emoji sets is empty.',
+            reply_markup=make_inline_keyboard([]).as_markup()
+        )
     else:
         builder = make_inline_keyboard(is_empty.keys())
-        await EditMessageText(chat_id=data['chat_id'],
-                              message_id=data['message_id'],
-                              text='Click on the set you want to delete:',
-                              reply_markup=builder.as_markup()
-                              )
+        await bot.edit_message_text(
+            chat_id=data['chat_id'],
+            message_id=data['message_id'],
+            text='Click on the set you want to delete:',
+            reply_markup=builder.as_markup()
+        )

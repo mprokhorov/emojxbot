@@ -29,10 +29,7 @@ async def add_sticker(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(image_path=path)
     await state.set_state(Add.choosing_set)
     builder = make_inline_keyboard(data['is_empty'].keys())
-    await message.answer(
-        'Select the emoji set to which the tiles will be added:',
-        reply_markup=builder.as_markup()
-    )
+    await message.answer('Select the emoji set to which the tiles will be added:', reply_markup=builder.as_markup())
 
 
 @router.message(Add.choosing_image, F.document)
@@ -44,10 +41,7 @@ async def add_document(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(image_path=path)
     await state.set_state(Add.choosing_set)
     builder = make_inline_keyboard(data['is_empty'].keys())
-    await message.answer(
-        'Select the emoji set to which the tiles will be added:',
-        reply_markup=builder.as_markup()
-    )
+    await message.answer('Select the emoji set to which the tiles will be added:', reply_markup=builder.as_markup())
 
 
 @router.message(Add.choosing_image, F.photo)
@@ -59,17 +53,12 @@ async def add_photo(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(image_path=path)
     await state.set_state(Add.choosing_set)
     builder = make_inline_keyboard(data['is_empty'].keys())
-    await message.answer(
-        'Select the emoji set to which the tiles will be added:',
-        reply_markup=builder.as_markup()
-    )
+    await message.answer('Select the emoji set to which the tiles will be added:', reply_markup=builder.as_markup())
 
 
 @router.message(Add.choosing_image)
 async def multiple_images_error(message: Message, state: FSMContext, bot: Bot):
-    await message.answer(
-        'Make sure you have sent one image.'
-    )
+    await message.answer('Make sure you have sent one image.')
 
 
 @router.callback_query(Add.choosing_set)
@@ -79,10 +68,7 @@ async def finalize(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
     is_empty = data['is_empty']
     set_names = is_empty.keys()
     if set_name not in set_names:
-        await callback.answer(
-            text='This emoji set doen\'t exist.',
-            show_alert=True
-        )
+        await callback.answer(text='This emoji set doen\'t exist.', show_alert=True)
         return
     await callback.answer()
     if is_empty[set_name]:
@@ -94,9 +80,7 @@ async def finalize(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
     image_path = data['image_path']
     image_for_emoji = Image.open(image_path)
     w, h = image_for_emoji.size
-    if w == h:
-        resized_image = image_for_emoji.resize((100, 100))
-    elif w < h:
+    if w < h:
         img = Image.new('RGBA', (h, h), (255, 0, 0, 0))
         back_im = img.copy()
         back_im.paste(image_for_emoji, ((h - w) // 2, 0))
@@ -108,6 +92,8 @@ async def finalize(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
         back_im.paste(image_for_emoji, (0, (w - h) // 2))
         resized_image = back_im
         resized_image = resized_image.resize((100, 100))
+    else:
+        resized_image = image_for_emoji.resize((100, 100))
     buf = io.BytesIO()
     resized_image.save(buf, format='PNG')
     buf.seek(0)

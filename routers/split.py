@@ -17,8 +17,9 @@ router = Router()
 
 @router.message(Command('split'))
 async def cmd_split(message: Message, state: FSMContext):
-    await message.reply(text='Send one file with extension .png or .jpeg. Note that the number of tiles should '
-                             'not exceed 200.')
+    await message.reply(
+        text='Send one file with extension .png or .jpeg. Note that the number of tiles should not exceed 200.'
+    )
     await state.set_state(Split.choosing_image)
 
 
@@ -39,9 +40,7 @@ async def get_document(message: Message, state: FSMContext, bot: Bot):
 
 @router.message(Split.choosing_image, ~F.document)
 async def multiple_documents_error(message: Message, state: FSMContext, bot: Bot):
-    await message.answer(
-        'Make sure you have sent one file with extension .png or .jpeg.'
-    )
+    await message.answer('Make sure you have sent one file with extension .png or .jpeg.')
 
 
 @router.callback_query(Split.choosing_set)
@@ -51,10 +50,7 @@ async def finalize(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
     is_empty = data['is_empty']
     set_names = is_empty.keys()
     if set_name not in set_names:
-        await callback.answer(
-            text='This emoji set doen\'t exist.',
-            show_alert=True
-        )
+        await callback.answer(text='This emoji set doen\'t exist.', show_alert=True)
         return
     await callback.answer()
     progress_message = await callback.message.answer('Splitting started...')
